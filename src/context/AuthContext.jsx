@@ -19,7 +19,7 @@ export const AuthProvider = ({ children }) => {
   const [mobileNumber, setMobileNumber] = useState('');
 
   useEffect(() => {
-    // Check if user is logged in
+    // Check if user d is logged in
     const token = localStorage.getItem('token');
     const userData = localStorage.getItem('user');
     if (token && userData) {
