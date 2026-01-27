@@ -18,6 +18,8 @@ const Layout = ({ children }) => {
     { path: '/jobs', label: 'Jobs', icon: '💼' },
     { path: '/schemes', label: 'Schemes', icon: '📋' },
     { path: '/users', label: 'Users', icon: '👥' },
+    { path: '/subadmins', label: 'Subadmins', icon: '👤' },
+    { path: '/audit-logs', label: 'Audit Logs', icon: '📝' },
   ];
 
   return (

@@ -103,4 +103,42 @@ export const adminAPI = {
   },
 };
 
+// Subadmin API
+export const subadminAPI = {
+  getAll: (params = {}) => {
+    return api.get('/admin/subadmins', { params });
+  },
+  getById: (id) => {
+    return api.get(`/admin/subadmins/${id}`);
+  },
+  create: (data) => {
+    return api.post('/admin/subadmins', data);
+  },
+  update: (id, data) => {
+    return api.put(`/admin/subadmins/${id}`, data);
+  },
+  updatePermissions: (id, permissions) => {
+    return api.put(`/admin/subadmins/${id}/permissions`, { permissions });
+  },
+  verify: (id, notes) => {
+    return api.post(`/admin/subadmins/${id}/verify`, { notes });
+  },
+  reject: (id, reason) => {
+    return api.post(`/admin/subadmins/${id}/reject`, { reason });
+  },
+  activate: (id) => {
+    return api.post(`/admin/subadmins/${id}/activate`);
+  },
+  deactivate: (id) => {
+    return api.post(`/admin/subadmins/${id}/deactivate`);
+  },
+};
+
+// Audit Logs API
+export const auditLogsAPI = {
+  getAll: (params = {}) => {
+    return api.get('/admin/audit-logs', { params });
+  },
+};
+
 export default api;

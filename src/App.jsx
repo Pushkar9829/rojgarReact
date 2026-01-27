@@ -8,6 +8,8 @@ import Dashboard from './pages/Dashboard';
 import Jobs from './pages/Jobs';
 import Schemes from './pages/Schemes';
 import Users from './pages/Users';
+import Subadmins from './pages/Subadmins';
+import AuditLogs from './pages/AuditLogs';
 
 const AppRoutes = () => {
   const { isAuthenticated, loading } = useAuth();
@@ -72,6 +74,26 @@ const AppRoutes = () => {
           <ProtectedRoute>
             <Layout>
               <Users />
+            </Layout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/subadmins"
+        element={
+          <ProtectedRoute>
+            <Layout>
+              <Subadmins />
+            </Layout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/audit-logs"
+        element={
+          <ProtectedRoute>
+            <Layout>
+              <AuditLogs />
             </Layout>
           </ProtectedRoute>
         }
