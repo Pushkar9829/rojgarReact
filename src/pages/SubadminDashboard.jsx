@@ -4,17 +4,18 @@ import toast from 'react-hot-toast';
 import { useAdminRealtime } from '../hooks/useAdminSocket';
 import { useAuth } from '../context/AuthContext';
 
-const Dashboard = () => {
+const SubadminDashboard = () => {
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
   const { user } = useAuth();
 
   const fetchStats = useCallback(async () => {
     try {
-      console.log('[Dashboard] fetchStats called');
+      console.log('[SubadminDashboard] fetchStats called');
+      console.log('[SubadminDashboard] User:', user?.role, user?.adminProfile?.assignedStates);
       const response = await adminAPI.getStats();
       const data = response.data?.data ?? response.data;
-      console.log('[Dashboard] Stats received:', {
+      console.log('[SubadminDashboard] Stats received:', {
         users: data?.users,
         jobs: data?.jobs,
         schemes: data?.schemes,
@@ -23,25 +24,25 @@ const Dashboard = () => {
       setStats(data);
     } catch (error) {
       toast.error('Failed to load statistics');
-      console.error('[Dashboard] fetchStats error:', error);
+      console.error('[SubadminDashboard] fetchStats error:', error);
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [user]);
 
   useEffect(() => {
-    console.log('[Dashboard] Component mounted, fetching stats');
+    console.log('[SubadminDashboard] Component mounted, fetching stats');
     fetchStats();
-    return () => console.log('[Dashboard] Component unmounted');
+    return () => console.log('[SubadminDashboard] Component unmounted');
   }, [fetchStats]);
 
   useAdminRealtime({
     onJobEvent: () => {
-      console.log('[Dashboard] Realtime job event, refetching stats');
+      console.log('[SubadminDashboard] Realtime job event, refetching stats');
       fetchStats();
     },
     onSchemeEvent: () => {
-      console.log('[Dashboard] Realtime scheme event, refetching stats');
+      console.log('[SubadminDashboard] Realtime scheme event, refetching stats');
       fetchStats();
     },
   });
@@ -77,76 +78,53 @@ const Dashboard = () => {
     </div>
   );
 
-  const isAdmin = user?.role === 'ADMIN';
+  const assignedStates = user?.adminProfile?.assignedStates || [];
+  const permissions = user?.adminProfile?.permissions || [];
 
   return (
     <div>
-      <div className="mb-6">
-        <h1 className="text-3xl font-bold text-gray-900">Admin Dashboard</h1>
+      <div className="mb-4">
+        <h1 className="text-3xl font-bold text-gray-900">Subadmin Dashboard</h1>
         <p className="text-gray-600 mt-2">
           Welcome, {user?.adminProfile?.name || user?.mobileNumber}
         </p>
+        {assignedStates.length > 0 && (
+          <p className="text-sm text-gray-500 mt-1">
+            Assigned States: {assignedStates.join(', ')}
+          </p>
+        )}
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
         <StatCard
-          title="Total Users"
+          title={assignedStates.length > 0 ? `Users (${assignedStates.length} States)` : 'Total Users'}
           value={stats.users.total}
           subtitle={`${stats.users.active} active`}
           icon="👥"
           color="blue"
         />
         <StatCard
-          title="Total Jobs"
+          title={assignedStates.length > 0 ? `Jobs (Filtered)` : 'Total Jobs'}
           value={stats.jobs.total}
           subtitle={`${stats.jobs.active} active, ${stats.jobs.featured} featured`}
           icon="💼"
           color="green"
         />
         <StatCard
-          title="Total Schemes"
+          title={assignedStates.length > 0 ? `Schemes (Filtered)` : 'Total Schemes'}
           value={stats.schemes.total}
           subtitle={`${stats.schemes.active} active, ${stats.schemes.featured} featured`}
           icon="📋"
           color="purple"
         />
-        {isAdmin ? (
-          <StatCard
-            title="Admins"
-            value={stats.users.admins || 0}
-            subtitle={`${stats.users.subadmins || 0} subadmins`}
-            icon="👑"
-            color="orange"
-          />
-        ) : (
-          <StatCard
-            title="Subadmins"
-            value={stats.users.subadmins || 0}
-            subtitle="Total subadmins"
-            icon="👤"
-            color="orange"
-          />
-        )}
+        <StatCard
+          title="My Permissions"
+          value={permissions.length}
+          subtitle={`${permissions.length} permissions granted`}
+          icon="🔐"
+          color="orange"
+        />
       </div>
-
-      {isAdmin && (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-          <StatCard
-            title="Super Admins"
-            value={stats.users.admins || 0}
-            subtitle="Full access administrators"
-            icon="👑"
-            color="purple"
-          />
-          <StatCard
-            title="Subadmins"
-            value={stats.users.subadmins || 0}
-            subtitle="Regional administrators"
-            icon="👤"
-            color="blue"
-          />
-        </div>
-      )}
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
         <div className="card">
@@ -211,8 +189,24 @@ const Dashboard = () => {
           </div>
         </div>
       </div>
+
+      {permissions.length > 0 && (
+        <div className="card mt-6">
+          <h2 className="text-xl font-semibold text-gray-900 mb-4">Your Permissions</h2>
+          <div className="flex flex-wrap gap-2">
+            {permissions.map((permission) => (
+              <span
+                key={permission}
+                className="px-3 py-1 bg-primary-100 text-primary-800 rounded-full text-sm"
+              >
+                {permission.replace(/_/g, ' ')}
+              </span>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 };
 
-export default Dashboard;
+export default SubadminDashboard;

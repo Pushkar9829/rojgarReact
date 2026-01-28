@@ -6,7 +6,7 @@ const Login = () => {
   const [mobile, setMobile] = useState('');
   const [otp, setOtp] = useState('');
   const [loading, setLoading] = useState(false);
-  const { sendOTP, verifyOTP, otpSent } = useAuth();
+  const { sendOTP, verifyOTP, otpSent, user } = useAuth();
   const navigate = useNavigate();
 
   const handleSendOTP = async (e) => {
@@ -35,7 +35,15 @@ const Login = () => {
     try {
       const success = await verifyOTP(otp);
       if (success) {
-        navigate('/dashboard');
+        // Redirect based on role - wait a moment for user state to update
+        setTimeout(() => {
+          const currentUser = JSON.parse(localStorage.getItem('user') || '{}');
+          if (currentUser.role === 'SUBADMIN') {
+            navigate('/subadmin-dashboard');
+          } else {
+            navigate('/dashboard');
+          }
+        }, 100);
       }
     } catch (error) {
       // Error handled in context

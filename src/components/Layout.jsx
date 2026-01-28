@@ -13,14 +13,31 @@ const Layout = ({ children }) => {
     navigate('/login');
   };
 
-  const navItems = [
-    { path: '/dashboard', label: 'Dashboard', icon: '📊' },
-    { path: '/jobs', label: 'Jobs', icon: '💼' },
-    { path: '/schemes', label: 'Schemes', icon: '📋' },
-    { path: '/users', label: 'Users', icon: '👥' },
-    { path: '/subadmins', label: 'Subadmins', icon: '👤' },
-    { path: '/audit-logs', label: 'Audit Logs', icon: '📝' },
-  ];
+  // Get navigation items based on user role
+  const getNavItems = () => {
+    const baseItems = [
+      { path: '/jobs', label: 'Jobs', icon: '💼' },
+      { path: '/schemes', label: 'Schemes', icon: '📋' },
+      { path: '/users', label: 'Users', icon: '👥' },
+    ];
+
+    if (user?.role === 'ADMIN') {
+      return [
+        { path: '/dashboard', label: 'Dashboard', icon: '📊' },
+        ...baseItems,
+        { path: '/subadmins', label: 'Subadmins', icon: '👤' },
+        { path: '/audit-logs', label: 'Audit Logs', icon: '📝' },
+      ];
+    } else if (user?.role === 'SUBADMIN') {
+      return [
+        { path: '/subadmin-dashboard', label: 'Dashboard', icon: '📊' },
+        ...baseItems,
+      ];
+    }
+    return baseItems;
+  };
+
+  const navItems = getNavItems();
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -50,8 +67,11 @@ const Layout = ({ children }) => {
             </div>
             <div className="flex items-center">
               <div className="flex items-center mr-4">
-                <span className="text-sm text-gray-700">
+                <span className="text-sm text-gray-700 mr-2">
                   {user?.adminProfile?.name || user?.mobileNumber}
+                </span>
+                <span className="text-xs px-2 py-1 rounded-full bg-primary-100 text-primary-800">
+                  {user?.role === 'ADMIN' ? 'Admin' : 'Subadmin'}
                 </span>
               </div>
               <button

@@ -26,7 +26,7 @@ npm install
 
 3. Create a `.env` file (optional, defaults to localhost:5000):
 ```env
-VITE_API_URL=http://localhost:5000/api
+VITE_API_URL=https://api.tatsatinfotech.com/api
 ```
 
 4. Make sure the backend server is running (see backend README)
@@ -111,7 +111,7 @@ admin-panel/
 
 ## API Integration
 
-The admin panel connects to the backend API at `http://localhost:5000/api` (or the URL specified in `.env`).
+The admin panel connects to the backend API at `https://api.tatsatinfotech.com/api` (or the URL specified in `.env`).
 
 All API calls are handled through the `src/services/api.js` file, which includes:
 - Automatic token injection

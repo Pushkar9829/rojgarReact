@@ -19,13 +19,13 @@ export const AuthProvider = ({ children }) => {
   const [mobileNumber, setMobileNumber] = useState('');
 
   useEffect(() => {
-    // Check if user d is logged in
+    // Check if user is logged in
     const token = localStorage.getItem('token');
     const userData = localStorage.getItem('user');
     if (token && userData) {
       try {
         const parsedUser = JSON.parse(userData);
-        if (parsedUser.role === 'ADMIN') {
+        if (parsedUser.role === 'ADMIN' || parsedUser.role === 'SUBADMIN') {
           setUser(parsedUser);
         } else {
           localStorage.removeItem('token');
@@ -56,8 +56,8 @@ export const AuthProvider = ({ children }) => {
       const response = await authAPI.verifyOTP(mobileNumber, otp, adminProfile);
       const { token, user: userData } = response.data.data;
       
-      if (userData.role !== 'ADMIN') {
-        toast.error('Access denied. Admin account required.');
+      if (userData.role !== 'ADMIN' && userData.role !== 'SUBADMIN') {
+        toast.error('Access denied. Admin or Subadmin account required.');
         return false;
       }
 

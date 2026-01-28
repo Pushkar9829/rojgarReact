@@ -1,10 +1,12 @@
 import { useEffect, useState, useCallback } from 'react';
 import { usersAPI } from '../services/api';
 import toast from 'react-hot-toast';
+import { useAuth } from '../context/AuthContext';
 
 const Users = () => {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
+  const { user } = useAuth();
   const [filters, setFilters] = useState({
     role: '',
     state: '',
@@ -64,7 +66,12 @@ const Users = () => {
             >
               <option value="">All</option>
               <option value="USER">User</option>
-              <option value="ADMIN">Admin</option>
+              {user?.role === 'ADMIN' && (
+                <>
+                  <option value="ADMIN">Admin</option>
+                  <option value="SUBADMIN">Subadmin</option>
+                </>
+              )}
             </select>
           </div>
           <div>
@@ -120,7 +127,11 @@ const Users = () => {
                   <td className="font-medium">{user.mobileNumber}</td>
                   <td>
                     <span className={`px-2 py-1 rounded text-xs ${
-                      user.role === 'ADMIN' ? 'bg-purple-100 text-purple-800' : 'bg-gray-100 text-gray-800'
+                      user.role === 'ADMIN' 
+                        ? 'bg-purple-100 text-purple-800' 
+                        : user.role === 'SUBADMIN'
+                        ? 'bg-blue-100 text-blue-800'
+                        : 'bg-gray-100 text-gray-800'
                     }`}>
                       {user.role}
                     </span>
@@ -128,7 +139,11 @@ const Users = () => {
                   <td>
                     {user.profile?.fullName || user.adminProfile?.name || 'N/A'}
                   </td>
-                  <td>{user.profile?.state || 'N/A'}</td>
+                  <td>
+                    {user.profile?.state || (user.adminProfile?.assignedStates?.length > 0 
+                      ? user.adminProfile.assignedStates.join(', ') 
+                      : 'All States') || 'N/A'}
+                  </td>
                   <td>{user.profile?.district || 'N/A'}</td>
                   <td>{user.profile?.education || 'N/A'}</td>
                   <td>{user.profile?.age || 'N/A'}</td>
